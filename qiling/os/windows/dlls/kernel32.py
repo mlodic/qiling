@@ -1300,3 +1300,175 @@ def hook_MultiByteToWideChar(ql, address, params):
     if params['cchWideChar'] != 0:
         ql.uc.mem_write(params['lpWideCharStr'], wide_str) 
     return len(wide_str)
+
+
+# int GetLocaleInfoA(
+#   LCID   Locale,
+#   LCTYPE LCType,
+#   LPSTR  lpLCData,
+#   int    cchData
+# );
+@winapi(cc=STDCALL, params={
+  "Locale": POINTER,
+  "LCType": POINTER,
+  "lpLCData": POINTER,
+  "cchData": INT
+})
+def hook_GetLocaleInfoA(ql, address, params):
+    ret = 0
+    return ret
+
+
+# SIZE_T HeapSize(
+#   HANDLE  hHeap,
+#   DWORD   dwFlags,
+#   LPCVOID lpMem
+# );
+@winapi(cc=STDCALL, params={
+    "hHeap": HANDLE,
+    "dwFlags": DWORD,
+    "lpMem": POINTER
+})
+def hook_HeapSize(ql, address, params):
+    size_t = 1
+    return size_t
+
+
+# DECLSPEC_ALLOCATOR LPVOID HeapReAlloc(
+#   HANDLE                 hHeap,
+#   DWORD                  dwFlags,
+#   _Frees_ptr_opt_ LPVOID lpMem,
+#   SIZE_T                 dwBytes
+# );
+@winapi(cc=STDCALL, params={
+    "hHeap": HANDLE,
+    "dwFlags": DWORD,
+    "lpMem": POINTER,
+    "dwBytes": SIZE_T
+})
+def hook_HeapReAlloc(ql, address, params):
+    ql.heap.mem_free(params['lpMem'])
+    ret = ql.heap.mem_alloc(params["dwBytes"])
+    return ret
+
+
+# void GetNativeSystemInfo(
+#   LPSYSTEM_INFO lpSystemInfo
+# );
+@winapi(cc=STDCALL, params={
+    "lpSystemInfo": POINTER
+})
+def hook_GetNativeSystemInfo(ql, address, params):
+    return
+
+
+# BOOL GetMailslotInfo(
+#   HANDLE  hMailslot,
+#   LPDWORD lpMaxMessageSize,
+#   LPDWORD lpNextSize,
+#   LPDWORD lpMessageCount,
+#   LPDWORD lpReadTimeout
+# );
+@winapi(cc=STDCALL, params={
+    "hMailslot": HANDLE,
+    "lpMaxMessageSize": POINTER,
+    "lpNextSize": POINTER,
+    "lpMessageCount": POINTER,
+    "lpReadTimeout": POINTER,
+})
+def hook_GetMailslotInfo(ql, address, params):
+    return 1
+
+
+# BOOL GetSystemTimeAdjustment(
+#   PDWORD lpTimeAdjustment,
+#   PDWORD lpTimeIncrement,
+#   PBOOL  lpTimeAdjustmentDisabled
+# );
+@winapi(cc=STDCALL, params={
+    "lpTimeAdjustment": POINTER,
+    "lpTimeIncrement": POINTER,
+    "lpTimeAdjustmentDisabled": POINTER
+})
+def hook_GetSystemTimeAdjustment(ql, address, params):
+    return 0
+
+# DECLSPEC_ALLOCATOR HLOCAL LocalAlloc(
+#   UINT   uFlags,
+#   SIZE_T uBytes
+# );
+@winapi(cc=STDCALL, params={
+    "uFlags": UINT,
+    "uBytes": UINT
+})
+def hook_LocalAlloc(ql, address, params):
+    return ql.heap.mem_alloc(params['uBytes'])
+
+# DECLSPEC_ALLOCATOR HLOCAL LocalReAlloc(
+#   _Frees_ptr_opt_ HLOCAL hMem,
+#   SIZE_T                 uBytes,
+#   UINT                   uFlags
+# );
+@winapi(cc=STDCALL, params={
+    "hMem": HANDLE,
+    "uBytes": SIZE_T,
+    "uFlags": UINT
+})
+def hook_LocalReAlloc(ql, address, params):
+    ql.heap.mem_free(params['hMem'])
+    return ql.heap.mem_alloc(params['uBytes'])
+
+# BOOL GetCursorPos(
+#   LPPOINT lpPoint
+# );
+@winapi(cc=STDCALL, params={
+    "lpPoint": POINTER,
+})
+def hook_GetCursorPos(ql, address, params):
+    return 1
+
+
+# UINT RegisterWindowMessageA(
+#   LPCSTR lpString
+# );
+@winapi(cc=STDCALL, params={
+    "lpString": POINTER,
+})
+def hook_RegisterWindowMessageA(ql, address, params):
+    #If the message is successfully registered, the return value is a message identifier in the range 0xC000 through 0xFFFF.
+    ret = 1
+    return ret
+
+
+# void InitializeCriticalSection(
+#   LPCRITICAL_SECTION lpCriticalSection
+# );
+@winapi(cc=STDCALL, params={
+    "lpCriticalSection": POINTER,
+})
+def hook_InitializeCriticalSection(ql, address, params):
+    return
+
+# BOOL InitializeCriticalSectionEx(
+#   LPCRITICAL_SECTION lpCriticalSection,
+#   DWORD              dwSpinCount,
+#   DWORD              Flags
+# );
+@winapi(cc=STDCALL, params={
+    "lpCriticalSection": POINTER,
+    "dwSpinCount": DWORD,
+    "Flags": DWORD
+})
+def hook_InitializeCriticalSectionEx(ql, address, params):
+    return 1
+
+# int GetSystemMetrics(
+#   int nIndex
+# );
+@winapi(cc=STDCALL, params={
+    "nIndex": INT,
+})
+def hook_GetSystemMetrics(ql, address, params):
+    return 1
+
+
